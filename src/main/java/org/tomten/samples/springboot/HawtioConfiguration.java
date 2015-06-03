@@ -1,9 +1,6 @@
 package org.tomten.samples.springboot;
 
 import io.hawt.HawtioContextListener;
-import io.hawt.config.ConfigFacade;
-import io.hawt.springboot.HawtPlugin;
-import io.hawt.springboot.PluginService;
 import io.hawt.system.ConfigManager;
 import io.hawt.web.AuthenticationFilter;
 import io.hawt.web.CORSFilter;
@@ -30,6 +27,9 @@ import org.springframework.boot.context.embedded.ServletListenerRegistrationBean
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -38,10 +38,24 @@ import java.util.Collections;
 
 
 @Configuration
-public class HawtioConfiguration {
+public class HawtioConfiguration extends WebMvcConfigurerAdapter {
 
     @Autowired
     private ServletContext servletContext;
+
+    @Override
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/hawtio/plugins/**").addResourceLocations("/app/", "classpath:/static/hawtio/app/");
+        registry.addResourceHandler("/hawtio/**").addResourceLocations("/app/", "classpath:/static/hawtio/app/");
+        registry.addResourceHandler("/hawtio/**").addResourceLocations("/", "classpath:/static/hawtio/");
+    }
+
+    @Override
+    public void addViewControllers(final ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("redirect:/hawtio/index.html");
+        registry.addViewController("/hawtio/plugin").setViewName("forward:/plugin");
+        registry.addViewController("/hawtio/").setViewName("redirect:/hawtio/index.html");
+    }
 
     @PostConstruct
     public void init() {
@@ -49,21 +63,6 @@ public class HawtioConfiguration {
         final ConfigManager configManager = new ConfigManager();
         configManager.init();
         servletContext.setAttribute("ConfigManager", configManager);
-    }
-
-    @Bean
-    public HawtPlugin samplePlugin() {
-        return new HawtPlugin("sample-plugin", "/hawtio/plugins", "", new String[] { "sample-plugin/js/sample-plugin.js" });
-    }
-
-    @Bean(initMethod = "init")
-    public ConfigFacade configFacade() throws Exception {
-        return new ConfigFacade();
-    }
-
-    @Bean
-    public PluginService pluginService() {
-        return new PluginService();
     }
 
     @Bean
@@ -180,7 +179,8 @@ public class HawtioConfiguration {
     public FilterRegistrationBean AuthenticationFilter() {
         final FilterRegistrationBean filter = new FilterRegistrationBean();
         filter.setFilter(new AuthenticationFilter());
-        filter.setUrlPatterns(Arrays.asList("/auth/*", "/jolokia/*", "/upload/*", "/javadoc/*"));
+        filter.setUrlPatterns(Arrays.asList("/hawtio/auth/*", "/jolokia/*", "/hawtio/upload/*", "/hawtio/javadoc/*"));
         return filter;
     }
+
 }
