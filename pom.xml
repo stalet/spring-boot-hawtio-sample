@@ -22,7 +22,7 @@
         <liquibase.url>jdbc:oracle:thin:@localhost:1521/XE</liquibase.url>
         <liquibase.changeLogFile>src/main/db/changelog.xml</liquibase.changeLogFile>
         <hawtio.version>2.0.1</hawtio.version>
-        <hawtio-springboot.version>1.5-SNAPSHOT</hawtio-springboot.version>
+        <hawtio-springboot.version>2.0.2-STALET</hawtio-springboot.version>
         <jolokia-version>1.3.1</jolokia-version>
         <spring-boot.version>1.2.3.RELEASE</spring-boot.version>
     </properties>
@@ -85,16 +85,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-actuator</artifactId>
             <version>${spring-boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jolokia</groupId>
-            <artifactId>jolokia-core</artifactId>
-            <version>${jolokia-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.hawt</groupId>
-            <artifactId>hawtio-system</artifactId>
-            <version>${hawtio.version}</version>
         </dependency>
         <dependency>
             <groupId>io.hawt</groupId>
